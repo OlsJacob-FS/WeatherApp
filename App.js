@@ -6,6 +6,7 @@ import * as Location from 'expo-location';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import ForecastScreen from './screens/ForecastScreen';
+import HourlyForecastScreen from './screens/HourlyForecastScreen';
 
 const Stack = createStackNavigator();
 
@@ -23,7 +24,7 @@ const MainScreen = ({ navigation }) => {
       url = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial`;
     } else if (city) {
       url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=imperial`;
-      
+
     } else {
       Alert.alert('Error', 'Please enter a city name or enable location.');
       return;
@@ -86,6 +87,7 @@ const App = () => (
     <Stack.Navigator>
       <Stack.Screen name="Home" component={MainScreen} />
       <Stack.Screen name="Forecast" component={ForecastScreen} />
+      <Stack.Screen name="HourlyForecast" component={HourlyForecastScreen} />
     </Stack.Navigator>
   </NavigationContainer>
 );
