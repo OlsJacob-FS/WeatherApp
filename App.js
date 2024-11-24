@@ -1,105 +1,94 @@
-//Import react dependants 
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import axios from 'axios';
-import * as Location from 'expo-location';
 import Constants from 'expo-constants';
+import * as Location from 'expo-location';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import ForecastScreen from './screens/ForecastScreen';
 
-export default function App() {
+const Stack = createStackNavigator();
 
+const MainScreen = ({ navigation }) => {
   const [city, setCity] = useState('');
-  const [weather, setWeather] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [location, setLocation] = useState(null);
+  const [weather, setWeather] = useState(null);
 
-  const fetchWeather = async (coords = null) => {
+  const fetchForecast = async (coords = null) => {
     const apiKey = Constants.expoConfig.extra.apiKey;
     let url;
 
-    //Check if long and lat are available
-    if(coords){
-      const {latitude, longitude} = coords;
-      url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial`;
+    if (coords) {
+      const { latitude, longitude } = coords;
+      url = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial`;
     } else if (city) {
-      url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`;
+      url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=imperial`;
+      
     } else {
-      Alert.alert('Error', "Please enter a city name or enable location services");
+      Alert.alert('Error', 'Please enter a city name or enable location.');
       return;
     }
 
-    // if(!city){
-    //   Alert.alert('Error', 'City name is required');
-    //   return;
-    // }
-    //Set loading to true while fetching API data
     setIsLoading(true);
-      try {
-        const response = await axios.get(url);
-        setWeather(response.data); 
-      } catch (error) {
-        console.error("Error while featching weather data", error);
-        Alert.alert("Error", "Could not fetch weather. Check the city name")
-      } finally {
-        setIsLoading(false);
-      }
+    try {
+      const response = await axios.get(url);
+      const forecast = response.data.list;
+      navigation.navigate('Forecast', { forecast, city: response.data.city.name });
+    } catch (error) {
+      console.error('Error fetching forecast:', error);
+      Alert.alert('Error', 'Could not fetch forecast. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    const getLocation = async () => {
-      setIsLoading(true);
-      try{
-        const { status } = await Location.requestForegroundPermissionsAsync()
-        if( status !== 'granted'){
-          Alert.alert("Permission Denied", 'Allow location access to fetch weather data.')
-          setIsLoading(false);
-          return;
-        }
-
-        const userLocation = await Location.getCurrentPositionAsync({});
-        setLocation(userLocation.coords);
-        fetchWeather(userLocation.coords);
-      } catch (error) {
-        console.error("Error while fetching location", error);
-        Alert.alert("Error", "Could not fetch location. Check location settings")
+  const getLocation = async () => {
+    setIsLoading(true);
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Allow location access to fetch weather.');
         setIsLoading(false);
+        return;
       }
+
+      const userLocation = await Location.getCurrentPositionAsync({});
+      fetchForecast(userLocation.coords);
+    } catch (error) {
+      console.error('Error getting location:', error);
+      Alert.alert('Error', 'Could not fetch location. Please try again.');
+      setIsLoading(false);
     }
-  //Handle city input from user
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Weather App</Text>
       <TextInput
         style={styles.input}
-        onChangeText={(text) => setCity(text)}
+        placeholder="Enter city name"
         value={city}
-        placeholder='Enter city name'
+        onChangeText={(text) => setCity(text)}
       />
-      <TouchableOpacity style={styles.searchBtn} title="Search" onPress={fetchWeather}>
-        <Text>Search</Text>
+      <TouchableOpacity style={styles.button} onPress={() => fetchForecast()}>
+        <Text style={styles.buttonText}>Get 5-Day Forecast</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.searchBtn} title="Search" onPress={getLocation}>
-        <Text>Use Location</Text>
+      <TouchableOpacity style={styles.button} onPress={getLocation}>
+        <Text style={styles.buttonText}>Get Forecast by GPS</Text>
       </TouchableOpacity>
-  {isLoading ? (
-        <ActivityIndicator size="large" color="#28f5fc" style={styles.loader}/>
-      ) : (
-      weather && (
-        <View style={styles.weatherContainer}>
-          <Text style={styles.city}>{weather?.name}</Text>
-          <Text style={styles.temp}>{weather?.main.temp}°F</Text>
-          <Text style={styles.desc}>{weather?.weather[0].description}</Text>
-          <Image source={{
-            uri: `https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`
-          }}
-          style={styles.weatherIcon}
-          />
-          </View>
-      )
-      )}
-  
+      {isLoading && <ActivityIndicator size="large" color="#007BFF" />}
     </View>
   );
-}
+};
 
+const App = () => (
+  <NavigationContainer>
+    <Stack.Navigator>
+      <Stack.Screen name="Home" component={MainScreen} />
+      <Stack.Screen name="Forecast" component={ForecastScreen} />
+    </Stack.Navigator>
+  </NavigationContainer>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -107,62 +96,36 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#111111',
+    backgroundColor: '#f5f5f5',
   },
   title: {
-    color: '#ffffff',
-    fontWeight: "bold",
-    fontSize: 28,
+    fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 20,
   },
   input: {
     width: '100%',
     height: 40,
     padding: 10,
-    borderColor: '#ffffff',
+    borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 8,
     marginBottom: 20,
     backgroundColor: '#fff',
   },
-  weatherContainer: {
+  button: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
     alignItems: 'center',
-    marginTop: 20,
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    marginBottom: 20,
   },
-  searchBtn: {
-    backgroundColor: '#28f5fc',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 15,
-    width: "40%",
-    borderRadius: 25,
-    marginTop: 5,
-  },
-  city: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  temp: {
-    fontSize: 20,
-    color: '#007BFF',
-    marginVertical: 10,
-  },
-  desc: {
+  buttonText: {
+    color: '#fff',
     fontSize: 16,
-    textTransform: 'capitalize',
-  },
-  loader: {
-    marginTop: 20,
-  },
-  weatherIcon: {
-    width: 150,
-    height: 150,
-    marginTop: 10,
+    fontWeight: 'bold',
   },
 });
 
+export default App;
