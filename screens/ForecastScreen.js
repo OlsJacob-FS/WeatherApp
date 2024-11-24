@@ -38,7 +38,7 @@ const ForecastScreen = ({ route }) => {
             style={styles.forecastIcon}
           />
           <Text style={styles.forecastTemp}>
-            High: {item.tempMax.toFixed(1)}°C | Low: {item.tempMin.toFixed(1)}°C
+            High: {item.tempMax.toFixed(1)}°F | Low: {item.tempMin.toFixed(1)}°F
           </Text>
           <Text style={styles.forecastDesc}>{item.description}</Text>
         </View>
@@ -50,6 +50,7 @@ const ForecastScreen = ({ route }) => {
           <Text style={styles.city}>5-Day Forecast for {city}</Text>
           <FlatList
             data={dailyForecast}
+            horizontal
             keyExtractor={(item) => item.date}
             renderItem={renderForecastItem}
             showsVerticalScrollIndicator={false}
@@ -63,6 +64,8 @@ const ForecastScreen = ({ route }) => {
           flex: 1,
           padding: 20,
           backgroundColor: '#f5f5f5',
+          maxHeight: 300,
+          margin: 10,
         },
         city: {
           fontSize: 24,
@@ -72,10 +75,15 @@ const ForecastScreen = ({ route }) => {
         },
         forecastItem: {
           alignItems: 'center',
-          marginBottom: 15,
+          margin: 10,
           padding: 10,
           backgroundColor: '#e0f7fa',
-          borderRadius: 8,
+          borderWidth: 1,
+          borderColor: '#000000',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.5,
+          borderRadius: 10,
         },
         forecastDate: {
           fontSize: 14,
