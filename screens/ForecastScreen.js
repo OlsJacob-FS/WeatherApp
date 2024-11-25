@@ -55,7 +55,7 @@ const ForecastScreen = ({ route, navigation }) => {
  
       return (
         <View style={styles.container}>
-          <Text style={styles.city}>5-Day Forecast for {city}</Text>
+          <Text style={styles.city}>{city}</Text>
           <FlatList
             data={dailyForecast}
             horizontal
@@ -70,10 +70,11 @@ const ForecastScreen = ({ route, navigation }) => {
     const styles = StyleSheet.create({
         container: {
           flex: 1,
-          padding: 20,
+          padding: 10,
+          marginTop: 15,
           backgroundColor: '#f5f5f5',
-          maxHeight: 300,
-          margin: 10,
+          Height: 300,
+          width: '100%',
         },
         city: {
           fontSize: 24,
@@ -83,6 +84,8 @@ const ForecastScreen = ({ route, navigation }) => {
         },
         forecastItem: {
           alignItems: 'center',
+          width: '100',
+          height: '225',
           margin: 10,
           padding: 10,
           backgroundColor: '#e0f7fa',

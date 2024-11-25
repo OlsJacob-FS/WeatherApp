@@ -8,22 +8,34 @@ const HourlyForecastScreen = ({ route }) => {
     const time = new Date(item.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     return (
       <View style={styles.hourlyItem}>
+        {/* TIME */}
         <Text style={styles.hourlyTime}>{time}</Text>
+
+        {/* WEATHER ICON */}
         <Image
           source={{
             uri: `https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`,
           }}
           style={styles.hourlyIcon}
         />
-        <Text style={styles.hourlyTemp}>{item.main.temp.toFixed(1)}°F</Text>
-        <Text style={styles.hourlyDesc}>{item.weather[0].description}</Text>
+        {/* TEMPERATURE AND DESCRIPTION */}
+        <View style={styles.tempContainer}>
+          <Text style={styles.hourlyTemp}>{item.main.temp.toFixed(1)}°F</Text>
+          <Text style={styles.hourlyDesc}>{item.weather[0].description}</Text>
+        </View>
+
+        <View style={styles.additionalDetails}>
+          <Text style={styles.detailsText}>💨 {item.wind.speed.toFixed(1)}</Text>
+          <Text style={styles.detailsText}>💧 {item.main.humidity}% </Text>
+        </View>
+
       </View>
     );
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Hourly Forecast for {new Date(date).toDateString()}</Text>
+      <Text style={styles.title}>{new Date(date).toDateString()}</Text>
       <FlatList
         data={hourlyData}
         keyExtractor={(item) => item.dt.toString()}
@@ -54,6 +66,16 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: '#e0f7fa',
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#000000',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    borderRadius: 10,
+  },
+  tempContainer: {
+    flex: 2,
+    alignItems: 'center',
   },
   hourlyTime: {
     fontSize: 16,
@@ -70,6 +92,10 @@ const styles = StyleSheet.create({
   hourlyDesc: {
     fontSize: 14,
     textTransform: 'capitalize',
+  },
+  detailsText: {
+    fontSize: 14,
+    color: '#555',
   },
 });
 
