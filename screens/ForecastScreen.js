@@ -72,7 +72,7 @@ const ForecastScreen = ({ route, navigation }) => {
           flex: 1,
           padding: 10,
           marginTop: 15,
-          backgroundColor: '#f5f5f5',
+          backgroundColor: '#2B3339',
           Height: 300,
           width: '100%',
         },
@@ -81,6 +81,7 @@ const ForecastScreen = ({ route, navigation }) => {
           fontWeight: 'bold',
           marginBottom: 20,
           textAlign: 'center',
+          color: '#D3C6AA',
         },
         forecastItem: {
           alignItems: 'center',
@@ -88,7 +89,7 @@ const ForecastScreen = ({ route, navigation }) => {
           height: '225',
           margin: 10,
           padding: 10,
-          backgroundColor: '#e0f7fa',
+          backgroundColor: '#3C474D',
           borderWidth: 1,
           borderColor: '#000000',
           shadowColor: '#000',
@@ -100,6 +101,7 @@ const ForecastScreen = ({ route, navigation }) => {
           fontSize: 14,
           fontWeight: 'bold',
           marginBottom: 5,
+          color: '#E69875',
         },
         forecastIcon: {
           width: 50,
@@ -108,10 +110,13 @@ const ForecastScreen = ({ route, navigation }) => {
         forecastTemp: {
           fontSize: 16,
           fontWeight: 'bold',
+          color: '#A7C080',
         },
         forecastDesc: {
           fontSize: 12,
           textTransform: 'capitalize',
+          color: '#D3C6AA',
+          textAlign: "center",
         },
       });
 

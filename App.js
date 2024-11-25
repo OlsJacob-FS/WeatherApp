@@ -64,7 +64,7 @@ const MainScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Weather App</Text>
+      <Text style={styles.title}>Mossy Skies</Text>
       <TextInput
         style={styles.input}
         placeholder="Enter city name"
@@ -129,25 +129,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#2B3339',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: '#D3C6AA'
   },
   input: {
     width: '100%',
     height: 40,
     padding: 10,
-    borderColor: '#ccc',
+    borderColor: '#4F5B66',
     borderWidth: 1,
     borderRadius: 8,
     marginBottom: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#3C474D',
+    color: '#D3C6AA',
   },
   button: {
-    backgroundColor: '#007BFF',
+    backgroundColor: '#A7C080',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -155,7 +157,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   buttonText: {
-    color: '#fff',
+    color: '#2B3339',
     fontSize: 16,
     fontWeight: 'bold',
   },

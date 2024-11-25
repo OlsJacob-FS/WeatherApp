@@ -4,8 +4,15 @@ import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
 const HourlyForecastScreen = ({ route }) => {
   const { hourlyData, date } = route.params;
 
+  //sort hourly data by time
+const sortedHourlyData = [ ...hourlyData].sort((a, b) => {
+  const hourA = new Date(a.dt * 1000).getHours();
+  const hourB = new Date(b.dt * 1000).getHours();
+  return hourA - hourB;
+})
+
   const renderHourlyItem = ({ item }) => {
-    const time = new Date(item.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const time = new Date(item.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
     return (
       <View style={styles.hourlyItem}>
         {/* TIME */}
@@ -37,7 +44,7 @@ const HourlyForecastScreen = ({ route }) => {
     <View style={styles.container}>
       <Text style={styles.title}>{new Date(date).toDateString()}</Text>
       <FlatList
-        data={hourlyData}
+        data={sortedHourlyData}
         keyExtractor={(item) => item.dt.toString()}
         renderItem={renderHourlyItem}
       />
@@ -49,7 +56,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#2B3339',
     height: '100%',
   },
   title: {
@@ -57,6 +64,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+    color: '#D3C6AA',
   },
   hourlyItem: {
     flexDirection: 'row',
@@ -64,7 +72,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 10,
     marginBottom: 10,
-    backgroundColor: '#e0f7fa',
+    backgroundColor: '#A7C080',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#000000',
@@ -80,6 +88,7 @@ const styles = StyleSheet.create({
   hourlyTime: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#3C474D',
   },
   hourlyIcon: {
     width: 40,
@@ -88,14 +97,17 @@ const styles = StyleSheet.create({
   hourlyTemp: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#3C474D',
   },
   hourlyDesc: {
     fontSize: 14,
     textTransform: 'capitalize',
+    color: '#3C474D',
   },
   detailsText: {
     fontSize: 14,
     color: '#555',
+    color: '#3C474D',
   },
 });
 
