@@ -7,6 +7,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import ForecastScreen from './screens/ForecastScreen';
 import HourlyForecastScreen from './screens/HourlyForecastScreen';
+import LoginScreen from './screens/LoginScreen';
 
 const Stack = createStackNavigator();
 
@@ -84,6 +85,11 @@ const MainScreen = ({ navigation }) => {
 
 const App = () => (
   <NavigationContainer>
+    <Stack.Screen 
+      name="Login" 
+      component={LoginScreen} 
+      options={{ headerShown: false }} 
+    />
     <Stack.Navigator
     screenOptions={{
       cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
