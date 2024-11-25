@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
-const ForecastScreen = ({ route }) => {
+const ForecastScreen = ({ route, navigation }) => {
   const { forecast, city } = route.params;
 
   // Group forecast data by day and calculate high/low temperatures
@@ -16,12 +16,15 @@ const ForecastScreen = ({ route }) => {
                 tempMax: item.main.temp,
                 tempMin: item.main.temp,
                 icon: item.weather[0].icon,
-                description: item.weather[0].description
+                description: item.weather[0].description,
+                hourly: [],
             };
         }else {
             groupedData[date].tempMax = Math.max(groupedData[date].tempMax, item.main.temp);
             groupedData[date].tempMin = Math.min(groupedData[date].tempMin, item.main.temp);
         }
+
+        groupedData[date].hourly.push(item);
     });
     return Object.values(groupedData); //Convert object back to array
   }
@@ -29,7 +32,11 @@ const ForecastScreen = ({ route }) => {
 
   
     const renderForecastItem = ({ item }) => (
-        <View style={styles.forecastItem}>
+        <TouchableOpacity
+        style={styles.forecastItem}
+        onPress={() => navigation.navigate('HourlyForecast', { hourlyData: item.hourly, date: item.date })}
+        >
+        
           <Text style={styles.forecastDate}>{new Date(item.date).toDateString()}</Text>
           <Image
             source={{
@@ -41,13 +48,14 @@ const ForecastScreen = ({ route }) => {
             High: {item.tempMax.toFixed(1)}°F | Low: {item.tempMin.toFixed(1)}°F
           </Text>
           <Text style={styles.forecastDesc}>{item.description}</Text>
-        </View>
+        
+        </TouchableOpacity>
       );
 
  
       return (
         <View style={styles.container}>
-          <Text style={styles.city}>5-Day Forecast for {city}</Text>
+          <Text style={styles.city}>{city}</Text>
           <FlatList
             data={dailyForecast}
             horizontal
@@ -62,10 +70,11 @@ const ForecastScreen = ({ route }) => {
     const styles = StyleSheet.create({
         container: {
           flex: 1,
-          padding: 20,
+          padding: 10,
+          marginTop: 15,
           backgroundColor: '#f5f5f5',
-          maxHeight: 300,
-          margin: 10,
+          Height: 300,
+          width: '100%',
         },
         city: {
           fontSize: 24,
@@ -75,6 +84,8 @@ const ForecastScreen = ({ route }) => {
         },
         forecastItem: {
           alignItems: 'center',
+          width: '100',
+          height: '225',
           margin: 10,
           padding: 10,
           backgroundColor: '#e0f7fa',

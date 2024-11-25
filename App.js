@@ -4,15 +4,16 @@ import axios from 'axios';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import ForecastScreen from './screens/ForecastScreen';
+import HourlyForecastScreen from './screens/HourlyForecastScreen';
 
 const Stack = createStackNavigator();
 
 const MainScreen = ({ navigation }) => {
   const [city, setCity] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [weather, setWeather] = useState(null);
+  
 
   const fetchForecast = async (coords = null) => {
     const apiKey = Constants.expoConfig.extra.apiKey;
@@ -23,7 +24,7 @@ const MainScreen = ({ navigation }) => {
       url = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial`;
     } else if (city) {
       url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=imperial`;
-      
+
     } else {
       Alert.alert('Error', 'Please enter a city name or enable location.');
       return;
@@ -83,9 +84,41 @@ const MainScreen = ({ navigation }) => {
 
 const App = () => (
   <NavigationContainer>
-    <Stack.Navigator>
-      <Stack.Screen name="Home" component={MainScreen} />
-      <Stack.Screen name="Forecast" component={ForecastScreen} />
+    <Stack.Navigator
+    screenOptions={{
+      cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+      gestureEnabled: true,
+      gestureDirection: 'horizontal',
+    }}>
+      {/* Home Screen */}
+      <Stack.Screen 
+        name="Home" 
+        component={MainScreen} 
+        options={{
+          headerShown: false
+      }} />
+      {/* Forecast Screen */}
+      <Stack.Screen 
+        name="Forecast" 
+        component={ForecastScreen} 
+        options={{
+          title: '5-Day Forecast',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+        }}/>
+      {/* Hourly Forecast Screen */}
+      <Stack.Screen 
+        name="HourlyForecast" 
+        component={HourlyForecastScreen} 
+        options={{
+          title: 'Hourly Forecast',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          cardStyleInterpolator: CardStyleInterpolators.forFadeFromBottomAndroid,
+        }}/>
     </Stack.Navigator>
   </NavigationContainer>
 );
