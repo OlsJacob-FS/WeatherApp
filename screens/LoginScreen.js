@@ -10,14 +10,15 @@ const LoginScreen = ({ navigation}) => {
     const [password, setPassword] = useState('');
 
     const handleLogin = async () => {
-        if(!email){
-            Alert.alert("Email is required");
+        if(!email || !password) {
+            Alert.alert("Error, Please enter email and password");
             return;
         }
 
         signInWithEmailAndPassword(auth, email, password)
         .then(() => {
             Alert.alert("Login Successful, Welcome Back");
+            navigation.replace("Home");
         })
         .catch((error) => {
             Alert.alert("Login Failed", error.message);
@@ -57,8 +58,8 @@ return (
         </TouchableOpacity>
 
         {/*navigate to register screen*/}
-        <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-            <Text style={styles.text}>Don't have an account? Register</Text>
+        <TouchableOpacity  onPress={() => navigation.navigate('SignUp')}>
+            <Text style={styles.link}>Don't have an account? Register</Text>
         </TouchableOpacity>
     </View>
     );
@@ -66,45 +67,50 @@ return (
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1, // Fill the screen
-      justifyContent: 'center', // Center vertically
-      padding: 20, // Add padding for spacing
-      backgroundColor: '#2B3339', // Everforest dark background
+      flex: 1, 
+      textAlign: 'center',
+      paddingTop: 100,
+      position: 'fixed',
+      top: 0,
+      padding: 20, 
+      backgroundColor: '#2B3339', 
     },
     title: {
-      fontSize: 24, // Large text for the title
-      fontWeight: 'bold', // Make the title bold
-      color: '#D3C6AA', // Everforest beige text
-      marginBottom: 20, // Spacing below the title
-      textAlign: 'center', // Center align the text
+      fontSize: 24, 
+      fontWeight: 'bold', 
+      color: '#D3C6AA', 
+      marginBottom: 20, 
+      textAlign: 'center', 
     },
     input: {
-      width: '100%', // Full width input
-      height: 40, // Fixed height
-      padding: 10, // Internal padding
-      borderColor: '#4F5B66', // Gray border
-      borderWidth: 1, // Thin border
-      borderRadius: 8, // Rounded corners
-      backgroundColor: '#3C474D', // Slightly lighter background
-      color: '#D3C6AA', // Text color
-      marginBottom: 20, // Spacing between inputs
+      width: '100%', 
+      height: 40, 
+      padding: 10, 
+      borderColor: '#4F5B66', 
+      borderWidth: 1, 
+      borderRadius: 8, 
+      backgroundColor: '#3C474D', 
+      color: '#D3C6AA', 
+      marginBottom: 20, 
     },
     button: {
-      backgroundColor: '#A7C080', // Everforest green
-      padding: 12, // Padding inside the button
-      borderRadius: 8, // Rounded corners
-      alignItems: 'center', // Center-align text
+      backgroundColor: '#A7C080', 
+      padding: 12, 
+      borderRadius: 8, 
+      alignItems: 'center',
+      margin: 5,
     },
     buttonText: {
-      color: '#2B3339', // Contrast text color
-      fontSize: 16, // Text size
-      fontWeight: 'bold', // Bold text
+      color: '#2B3339', 
+      fontSize: 16, 
+      fontWeight: 'bold', 
     },
     link: {
-      color: '#E69875', // Everforest muted orange
-      textAlign: 'center', // Center-align text
-      marginTop: 10, // Space above the link
+      color: '#A7C080',
+      textAlign: 'center',
+      marginTop: 5,
     },
+  
   });
 
   export default LoginScreen;
