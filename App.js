@@ -1,88 +1,41 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import axios from 'axios';
-import Constants from 'expo-constants';
-import * as Location from 'expo-location';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './firebaseConfig';
+{/*Import pages*/}
+import MainScreen from './screens/MainScreen';
 import ForecastScreen from './screens/ForecastScreen';
 import HourlyForecastScreen from './screens/HourlyForecastScreen';
+import LoginScreen from './screens/LoginScreen';
+import SignUpScreen from './screens/SignUpScreen';
+
 
 const Stack = createStackNavigator();
 
-const MainScreen = ({ navigation }) => {
-  const [city, setCity] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  
+const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
 
-  const fetchForecast = async (coords = null) => {
-    const apiKey = Constants.expoConfig.extra.apiKey;
-    let url;
+  useEffect(() => {
 
-    if (coords) {
-      const { latitude, longitude } = coords;
-      url = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial`;
-    } else if (city) {
-      url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=imperial`;
-
-    } else {
-      Alert.alert('Error', 'Please enter a city name or enable location.');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const response = await axios.get(url);
-      const forecast = response.data.list;
-      navigation.navigate('Forecast', { forecast, city: response.data.city.name });
-    } catch (error) {
-      console.error('Error fetching forecast:', error);
-      Alert.alert('Error', 'Could not fetch forecast. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const getLocation = async () => {
-    setIsLoading(true);
-    try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Allow location access to fetch weather.');
-        setIsLoading(false);
-        return;
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if(user) {
+        //User is logged in
+        setIsLoggedIn(true);
+      } else {
+        //User is logged out
+        setIsLoggedIn(false);
       }
+    });
 
-      const userLocation = await Location.getCurrentPositionAsync({});
-      fetchForecast(userLocation.coords);
-    } catch (error) {
-      console.error('Error getting location:', error);
-      Alert.alert('Error', 'Could not fetch location. Please try again.');
-      setIsLoading(false);
-    }
-  };
+    return unsubscribe;
+  }, []);
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Mossy Skies</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter city name"
-        value={city}
-        onChangeText={(text) => setCity(text)}
-      />
-      <TouchableOpacity style={styles.button} onPress={() => fetchForecast()}>
-        <Text style={styles.buttonText}>Get 5-Day Forecast</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={getLocation}>
-        <Text style={styles.buttonText}>Get Forecast by GPS</Text>
-      </TouchableOpacity>
-      {isLoading && <ActivityIndicator size="large" color="#007BFF" />}
-    </View>
-  );
-};
+  if(isLoggedIn === null) {
+    return null;
+  }
 
-const App = () => (
+return (
   <NavigationContainer>
     <Stack.Navigator
     screenOptions={{
@@ -90,77 +43,26 @@ const App = () => (
       gestureEnabled: true,
       gestureDirection: 'horizontal',
     }}>
-      {/* Home Screen */}
-      <Stack.Screen 
-        name="Home" 
-        component={MainScreen} 
-        options={{
-          headerShown: false
-      }} />
-      {/* Forecast Screen */}
-      <Stack.Screen 
-        name="Forecast" 
-        component={ForecastScreen} 
-        options={{
-          title: '5-Day Forecast',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-          cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
-        }}/>
-      {/* Hourly Forecast Screen */}
-      <Stack.Screen 
-        name="HourlyForecast" 
-        component={HourlyForecastScreen} 
-        options={{
-          title: 'Hourly Forecast',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-          cardStyleInterpolator: CardStyleInterpolators.forFadeFromBottomAndroid,
-        }}/>
+      {isLoggedIn ? (
+      <React.Fragment>     
+     
+        <Stack.Screen name="Home" component={MainScreen} options={{ headerShown: false }} />
+      
+        <Stack.Screen name="Forecast" component={ForecastScreen} options={{title: '5-Day Forecast', headerTitleStyle: {fontWeight: 'bold',}, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}}/>
+      
+        <Stack.Screen name="HourlyForecast" component={HourlyForecastScreen} options={{title: 'Hourly Forecast', headerTitleStyle: { fontWeight: 'bold',}, cardStyleInterpolator: CardStyleInterpolators.forFadeFromBottomAndroid,}}/>
+      </React.Fragment>
+      ) : (
+      <React.Fragment>
+        <Stack.Screen name="SignUp" component={SignUpScreen} options={{headerTitle: 'Sign Up', headerTitleStyle: {fontWeight: 'bold',}}}/>      
+        <Stack.Screen name="Login" component={LoginScreen} options={{headerTitle: 'Login', headerTitleStyle: {fontWeight: 'bold',}}}/>
+      </React.Fragment>
+      )}
     </Stack.Navigator>
   </NavigationContainer>
 );
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#2B3339',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#D3C6AA'
-  },
-  input: {
-    width: '100%',
-    height: 40,
-    padding: 10,
-    borderColor: '#4F5B66',
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 20,
-    backgroundColor: '#3C474D',
-    color: '#D3C6AA',
-  },
-  button: {
-    backgroundColor: '#A7C080',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  buttonText: {
-    color: '#2B3339',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
+
 
 export default App;
