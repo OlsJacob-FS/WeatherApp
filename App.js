@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebaseConfig';
-{/*Import pages*/}
-import MainScreen from './screens/MainScreen';
-import ForecastScreen from './screens/ForecastScreen';
-import HourlyForecastScreen from './screens/HourlyForecastScreen';
-import LoginScreen from './screens/LoginScreen';
-import SignUpScreen from './screens/SignUpScreen';
-
+import React, { useEffect, useState } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import {
+  createStackNavigator,
+  CardStyleInterpolators,
+} from "@react-navigation/stack";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebaseConfig";
+{
+  /*Import pages*/
+}
+import MainScreen from "./screens/MainScreen";
+import ForecastScreen from "./screens/ForecastScreen";
+import HourlyForecastScreen from "./screens/HourlyForecastScreen";
+import LoginScreen from "./screens/LoginScreen";
+import SignUpScreen from "./screens/SignUpScreen";
 
 const Stack = createStackNavigator();
 
@@ -17,9 +21,8 @@ const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
 
   useEffect(() => {
-
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if(user) {
+      if (user) {
         //User is logged in
         setIsLoggedIn(true);
       } else {
@@ -31,38 +34,74 @@ const App = () => {
     return unsubscribe;
   }, []);
 
-  if(isLoggedIn === null) {
+  if (isLoggedIn === null) {
     return null;
   }
 
-return (
-  <NavigationContainer>
-    <Stack.Navigator
-    screenOptions={{
-      cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-      gestureEnabled: true,
-      gestureDirection: 'horizontal',
-    }}>
-      {isLoggedIn ? (
-      <React.Fragment>     
-     
-        <Stack.Screen name="Home" component={MainScreen} options={{ headerShown: false }} />
-      
-        <Stack.Screen name="Forecast" component={ForecastScreen} options={{title: '5-Day Forecast', headerTitleStyle: {fontWeight: 'bold',}, cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,}}/>
-      
-        <Stack.Screen name="HourlyForecast" component={HourlyForecastScreen} options={{title: 'Hourly Forecast', headerTitleStyle: { fontWeight: 'bold',}, cardStyleInterpolator: CardStyleInterpolators.forFadeFromBottomAndroid,}}/>
-      </React.Fragment>
-      ) : (
-      <React.Fragment>
-        <Stack.Screen name="SignUp" component={SignUpScreen} options={{headerTitle: 'Sign Up', headerTitleStyle: {fontWeight: 'bold',}}}/>      
-        <Stack.Screen name="Login" component={LoginScreen} options={{headerTitle: 'Login', headerTitleStyle: {fontWeight: 'bold',}}}/>
-      </React.Fragment>
-      )}
-    </Stack.Navigator>
-  </NavigationContainer>
-);
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          gestureEnabled: true,
+          gestureDirection: "horizontal",
+          initialRouteName: isLoggedIn ? "Home" : "Login",
+        }}
+      >
+        {/* {isLoggedIn ? ( */}
+        {/* <React.Fragment> */}
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{
+            headerTitle: "Login",
+            headerTitleStyle: { fontWeight: "bold" },
+          }}
+        />
+
+        <Stack.Screen
+          name="SignUp"
+          component={SignUpScreen}
+          options={{
+            headerTitle: "Sign Up",
+            headerTitleStyle: { fontWeight: "bold" },
+          }}
+        />
+        <Stack.Screen
+          name="Home"
+          component={MainScreen}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="Forecast"
+          component={ForecastScreen}
+          options={{
+            title: "5-Day Forecast",
+            headerTitleStyle: { fontWeight: "bold" },
+            cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+          }}
+        />
+
+        <Stack.Screen
+          name="HourlyForecast"
+          component={HourlyForecastScreen}
+          options={{
+            title: "Hourly Forecast",
+            headerTitleStyle: { fontWeight: "bold" },
+            cardStyleInterpolator:
+              CardStyleInterpolators.forFadeFromBottomAndroid,
+          }}
+        />
+        {/* </React.Fragment> */}
+        {/* ) : ( */}
+        {/* <React.Fragment> */}
+
+        {/* </React.Fragment> */}
+        {/* )} */}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 };
-
-
 
 export default App;
