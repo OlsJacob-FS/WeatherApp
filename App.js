@@ -10,7 +10,6 @@ import { auth } from "./firebaseConfig";
   /*Import pages*/
 }
 import MainScreen from "./screens/MainScreen";
-import ForecastScreen from "./screens/ForecastScreen";
 import HourlyForecastScreen from "./screens/HourlyForecastScreen";
 import LoginScreen from "./screens/LoginScreen";
 import SignUpScreen from "./screens/SignUpScreen";
@@ -74,16 +73,6 @@ const App = () => {
         />
 
         <Stack.Screen
-          name="Forecast"
-          component={ForecastScreen}
-          options={{
-            title: "5-Day Forecast",
-            headerTitleStyle: { fontWeight: "bold" },
-            cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
-          }}
-        />
-
-        <Stack.Screen
           name="HourlyForecast"
           component={HourlyForecastScreen}
           options={{
@@ -93,12 +82,6 @@ const App = () => {
               CardStyleInterpolators.forFadeFromBottomAndroid,
           }}
         />
-        {/* </React.Fragment> */}
-        {/* ) : ( */}
-        {/* <React.Fragment> */}
-
-        {/* </React.Fragment> */}
-        {/* )} */}
       </Stack.Navigator>
     </NavigationContainer>
   );
